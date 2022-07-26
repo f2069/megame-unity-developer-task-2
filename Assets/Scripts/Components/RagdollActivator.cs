@@ -1,7 +1,7 @@
 using UnityEngine;
 
 namespace MegameAnimatoins.Components {
-    public class RagdollEnabler : MonoBehaviour {
+    public class RagdollActivator : MonoBehaviour {
         [SerializeField] private Animator animator;
         [SerializeField] private Transform ragdollRoot;
         [SerializeField] private bool ragdoolAwake;

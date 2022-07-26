@@ -9,12 +9,18 @@ namespace MegameAnimatoins {
         [SerializeField] private Transform startWeapon;
         [SerializeField] private Transform shootingHandPosition;
         [SerializeField] private Transform sword;
+        [SerializeField] private Transform swordHandPosition;
         [SerializeField] private float fatalityRadius;
         [SerializeField] private float moveSpeed = 1f;
         [SerializeField] private float rotateTime = .1f;
 
-        private static readonly int VelocityAnimationKey = Animator.StringToHash("velocity");
+        [SerializeField] private Enemy target;
 
+        private static readonly int VelocityAnimationKey = Animator.StringToHash("velocity");
+        private static readonly int FatalityAnimationKey = Animator.StringToHash("is-fatality");
+
+        private GameObject _currentWeapon;
+        private GameObject _swordWeapon;
         private Vector3 _inputDirection;
         private UserInputHandler _userInput;
         private CharacterController _characterController;
@@ -30,7 +36,10 @@ namespace MegameAnimatoins {
 
             _userInput.OnMoveEvent += OnInputMove;
             _userInput.OnRotateEvent += OnInputRotate;
+            _userInput.OnFireEvent += OnInputFire;
         }
+
+        private bool _playerOnGround = true;
 
         private void Start() {
             InitWeapon();
@@ -38,6 +47,7 @@ namespace MegameAnimatoins {
 
         private void Update() {
             var direction = Vector3.zero;
+            var deltaTime = Time.deltaTime;
 
             if (_inputDirection != Vector3.zero) {
                 var targetAngle = Mathf.Atan2(_inputDirection.x, _inputDirection.z) * Mathf.Rad2Deg
@@ -49,7 +59,13 @@ namespace MegameAnimatoins {
                 transform.rotation = Quaternion.Euler(0, dampedAngle, 0);
 
                 direction = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
-                _characterController.Move(direction.normalized * moveSpeed * Time.deltaTime);
+            }
+
+            direction = _playerOnGround ? direction : direction + Vector3.down;
+
+            if (direction != Vector3.zero) {
+                _characterController.Move(direction.normalized * moveSpeed * deltaTime);
+                _playerOnGround = _characterController.isGrounded;
             }
 
             animator.SetFloat(VelocityAnimationKey, direction.normalized.magnitude);
@@ -73,6 +89,7 @@ namespace MegameAnimatoins {
         private void OnDestroy() {
             _userInput.OnMoveEvent -= OnInputMove;
             _userInput.OnRotateEvent -= OnInputRotate;
+            _userInput.OnFireEvent -= OnInputFire;
         }
 
         private void OnInputRotate(Vector3 mouseposition) {
@@ -96,10 +113,47 @@ namespace MegameAnimatoins {
             => _inputDirection = direction.normalized;
 
         private void InitWeapon() {
-            Instantiate(
+            _currentWeapon = Instantiate(
                 startWeapon.gameObject,
                 shootingHandPosition
             );
+
+            _swordWeapon = Instantiate(
+                sword.gameObject,
+                swordHandPosition
+            );
+            _swordWeapon.SetActive(false);
+        }
+
+        private void SwitchWeapon(bool isSword) {
+            _currentWeapon.SetActive(!isSword);
+            _swordWeapon.SetActive(isSword);
+        }
+
+        private bool _isAnimated;
+
+        private void OnInputFire() {
+            if (_isAnimated) {
+                return;
+            }
+
+            _isAnimated = true;
+            _userInput.SetLock(true);
+            _inputDirection = Vector3.zero;
+            SwitchWeapon(true);
+
+            animator.SetTrigger(FatalityAnimationKey);
+        }
+
+        public void OnFatalityTrigger() {
+            target.Kill();
+        }
+
+        public void OnFatalityEnd() {
+            SwitchWeapon(true);
+
+            _userInput.SetLock(false);
+            _isAnimated = false;
         }
     }
 }
