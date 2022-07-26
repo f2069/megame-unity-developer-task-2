@@ -2,7 +2,7 @@ using System.Collections;
 using MegameAnimatoins.Components;
 using UnityEngine;
 
-namespace MegameAnimatoins {
+namespace MegameAnimatoins.View.Creatures.Mobs {
     public class Enemy : MonoBehaviour {
         private RagdollActivator _ragdollActivator;
 

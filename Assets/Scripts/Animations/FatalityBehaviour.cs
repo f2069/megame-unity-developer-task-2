@@ -1,3 +1,4 @@
+using MegameAnimatoins.View.Creatures.Player;
 using UnityEngine;
 
 namespace MegameAnimatoins.Animations {

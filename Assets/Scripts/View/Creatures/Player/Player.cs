@@ -1,51 +1,53 @@
+using MegameAnimatoins.Core.Dictionares;
+using MegameAnimatoins.Core.Extensions;
 using MegameAnimatoins.UserInput;
+using MegameAnimatoins.View.Creatures.Mobs;
 using UnityEngine;
 
-namespace MegameAnimatoins {
+namespace MegameAnimatoins.View.Creatures.Player {
     public class Player : MonoBehaviour {
         [SerializeField] private Animator animator;
         [SerializeField] private LayerMask groundLayers;
         [SerializeField] private Transform spineNode;
-        [SerializeField] private Transform startWeapon;
+        [SerializeField] private LayerMask enemyLayers;
+
+        [Header("Weapons")] [SerializeField] private Transform startWeapon;
         [SerializeField] private Transform shootingHandPosition;
         [SerializeField] private Transform sword;
+
         [SerializeField] private Transform swordHandPosition;
-        [SerializeField] private float fatalityRadius;
+
+        [Header("Movement")] [SerializeField] private float pelvisRotateTime = .5f;
         [SerializeField] private float moveSpeed = 1f;
-        [SerializeField] private float rotateTime = .1f;
-
-        [SerializeField] private Enemy target;
-
-        private static readonly int VelocityAnimationKey = Animator.StringToHash("velocity");
-        private static readonly int FatalityAnimationKey = Animator.StringToHash("is-fatality");
+        [SerializeField] private float bodyMaxRotateAngle = 70;
 
         private GameObject _currentWeapon;
         private GameObject _swordWeapon;
         private Vector3 _inputDirection;
         private UserInputHandler _userInput;
-        private CharacterController _characterController;
         private Camera _camera;
         private Vector3 _lookTarget;
+        private Rigidbody _rigidbody;
+        private Enemy _enemyTarget;
 
+        private bool _isAnimated;
         private float _turnVelocity;
 
         private void Awake() {
             _camera = Camera.main;
-            _characterController = GetComponent<CharacterController>();
             _userInput = GetComponent<UserInputHandler>();
 
             _userInput.OnMoveEvent += OnInputMove;
             _userInput.OnRotateEvent += OnInputRotate;
-            _userInput.OnFireEvent += OnInputFire;
-        }
 
-        private bool _playerOnGround = true;
+            _rigidbody = GetComponent<Rigidbody>();
+        }
 
         private void Start() {
-            InitWeapon();
+            InitWeapons();
         }
 
-        private void Update() {
+        private void FixedUpdate() {
             var direction = Vector3.zero;
             var deltaTime = Time.deltaTime;
 
@@ -53,22 +55,21 @@ namespace MegameAnimatoins {
                 var targetAngle = Mathf.Atan2(_inputDirection.x, _inputDirection.z) * Mathf.Rad2Deg
                                   + _camera.transform.eulerAngles.y;
 
-                var dampedAngle =
-                    Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _turnVelocity, rotateTime);
+                var dampedAngle = Mathf.SmoothDampAngle(
+                    transform.eulerAngles.y,
+                    targetAngle,
+                    ref _turnVelocity,
+                    pelvisRotateTime
+                );
 
-                transform.rotation = Quaternion.Euler(0, dampedAngle, 0);
+                _rigidbody.rotation = Quaternion.Euler(0, dampedAngle, 0);
 
                 direction = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
+
+                _rigidbody.MovePosition(_rigidbody.position + direction * moveSpeed * deltaTime);
             }
 
-            direction = _playerOnGround ? direction : direction + Vector3.down;
-
-            if (direction != Vector3.zero) {
-                _characterController.Move(direction.normalized * moveSpeed * deltaTime);
-                _playerOnGround = _characterController.isGrounded;
-            }
-
-            animator.SetFloat(VelocityAnimationKey, direction.normalized.magnitude);
+            animator.SetFloat(AnimatorConstants.VelocityAnimationKey, direction.normalized.magnitude);
         }
 
         private void LateUpdate() {
@@ -83,13 +84,16 @@ namespace MegameAnimatoins {
                 Vector3.up
             );
 
+            signedAngle = signedAngle > 0
+                ? Mathf.Min(signedAngle, bodyMaxRotateAngle)
+                : Mathf.Max(signedAngle, -bodyMaxRotateAngle);
+
             spineNode.localEulerAngles += Quaternion.Euler(signedAngle, 0, 0).eulerAngles;
         }
 
         private void OnDestroy() {
             _userInput.OnMoveEvent -= OnInputMove;
             _userInput.OnRotateEvent -= OnInputRotate;
-            _userInput.OnFireEvent -= OnInputFire;
         }
 
         private void OnInputRotate(Vector3 mouseposition) {
@@ -112,7 +116,7 @@ namespace MegameAnimatoins {
         private void OnInputMove(Vector3 direction)
             => _inputDirection = direction.normalized;
 
-        private void InitWeapon() {
+        private void InitWeapons() {
             _currentWeapon = Instantiate(
                 startWeapon.gameObject,
                 shootingHandPosition
@@ -130,23 +134,23 @@ namespace MegameAnimatoins {
             _swordWeapon.SetActive(isSword);
         }
 
-        private bool _isAnimated;
-
-        private void OnInputFire() {
+        private void KillTarget(Enemy target) {
             if (_isAnimated) {
                 return;
             }
+
+            _enemyTarget = target;
 
             _isAnimated = true;
             _userInput.SetLock(true);
             _inputDirection = Vector3.zero;
             SwitchWeapon(true);
 
-            animator.SetTrigger(FatalityAnimationKey);
+            animator.SetTrigger(AnimatorConstants.FatalityAnimationKey);
         }
 
         public void OnFatalityTrigger() {
-            target.Kill();
+            _enemyTarget.Kill();
         }
 
         public void OnFatalityEnd() {
@@ -154,6 +158,14 @@ namespace MegameAnimatoins {
 
             _userInput.SetLock(false);
             _isAnimated = false;
+        }
+
+        private void OnTriggerEnter(Collider other) {
+            if (!other.gameObject.IsInLayer(enemyLayers)) {
+                return;
+            }
+
+            KillTarget(other.gameObject.GetComponent<Enemy>());
         }
     }
 }
