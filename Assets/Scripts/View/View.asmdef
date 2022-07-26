@@ -1,0 +1,19 @@
+{
+    "name": "View",
+    "rootNamespace": "MegameAnimatoins",
+    "references": [
+        "GUID:270a66f3d413eb74c9a7f94c0620731e",
+        "GUID:0ad1dcf9ef008cc4d87e5e8419315b8b",
+        "GUID:8901c609ab6bb764fbdd2df2670f4db7",
+        "GUID:79066efd1ac7cfb4d85ad7b64b2f0a18"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

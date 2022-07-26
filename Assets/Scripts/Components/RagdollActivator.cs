@@ -32,6 +32,7 @@ namespace MegameAnimatoins.Components {
 
         private void SwitchRagdoll(bool ragdollState) {
             animator.enabled = !ragdollState;
+
             foreach (var joint in _joints) {
                 joint.enableCollision = ragdollState;
             }
@@ -42,9 +43,9 @@ namespace MegameAnimatoins.Components {
 
             foreach (var modelRigidbody in _rigidbodies) {
                 modelRigidbody.isKinematic = !ragdollState;
-                modelRigidbody.useGravity = ragdollState;
-                modelRigidbody.detectCollisions = ragdollState;
                 modelRigidbody.velocity = ragdollState ? Vector3.zero : modelRigidbody.velocity;
+                modelRigidbody.detectCollisions = ragdollState;
+                modelRigidbody.useGravity = ragdollState;
             }
         }
     }

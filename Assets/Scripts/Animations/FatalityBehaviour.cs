@@ -1,15 +1,15 @@
-using MegameAnimatoins.View.Creatures.Player;
+using MegameAnimatoins.Core.Interfaces;
 using UnityEngine;
 
 namespace MegameAnimatoins.Animations {
     public class FatalityBehaviour : StateMachineBehaviour {
         [SerializeField] [Range(0f, 1f)] private float triggerTime = .5f;
 
-        private Player _player;
+        private IPlayerInterface _playerView;
         private bool _isTriggered;
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-            _player = animator.GetComponentInParent<Player>();
+            _playerView = animator.GetComponentInParent<IPlayerInterface>();
             _isTriggered = false;
         }
 
@@ -26,11 +26,10 @@ namespace MegameAnimatoins.Animations {
             }
 
             _isTriggered = true;
-            _player.OnFatalityTrigger();
+            _playerView.OnFatalityTrigger();
         }
 
-        public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-            _player.OnFatalityEnd();
-        }
+        public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+            => _playerView.OnFatalityAnimationEnd();
     }
 }

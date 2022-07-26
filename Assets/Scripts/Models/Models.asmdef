@@ -1,0 +1,16 @@
+{
+    "name": "Models",
+    "rootNamespace": "MegameAnimatoins",
+    "references": [
+        "GUID:270a66f3d413eb74c9a7f94c0620731e"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

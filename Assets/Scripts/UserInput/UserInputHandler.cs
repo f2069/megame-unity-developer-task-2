@@ -6,9 +6,11 @@ namespace MegameAnimatoins.UserInput {
 
         public delegate void OnMove(Vector3 direction);
 
-        public event OnRotate OnRotateEvent;
+        public delegate void OnFire();
 
+        public event OnRotate OnRotateEvent;
         public event OnMove OnMoveEvent;
+        public event OnFire OnFireEvent;
 
         private bool _isLocked;
 
@@ -22,6 +24,7 @@ namespace MegameAnimatoins.UserInput {
 
             GetMovement();
             GetRotation();
+            GetSpaceButton();
         }
 
         public void SetLock(bool lockState)
@@ -37,7 +40,16 @@ namespace MegameAnimatoins.UserInput {
             OnMoveEvent?.Invoke(direction);
         }
 
-        private void GetRotation()
-            => OnRotateEvent?.Invoke(Input.mousePosition);
+        private void GetRotation() {
+            OnRotateEvent?.Invoke(Input.mousePosition);
+        }
+
+        private void GetSpaceButton() {
+            if (!Input.GetButtonDown(InputConstants.ButtonNameFire)) {
+                return;
+            }
+
+            OnFireEvent?.Invoke();
+        }
     }
 }
