@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: ec3c14b2f92fb8f4081514df7e3fb359
+guid: 7f2035a48f26b6c4280c029220300ea6
 ModelImporter:
   serializedVersion: 21100
   internalIDToNameTable:
   - first:
       74: 1827226128182048838
-    second: Run_Left_Rifle
+    second: Idle
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -35,18 +35,18 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Run_Left_Rifle
+      name: Idle
       takeName: Take 001
       internalID: 0
       firstFrame: 0
-      lastFrame: 48
+      lastFrame: 857
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0

@@ -19,15 +19,14 @@ namespace MegameAnimatoins {
         private UserInputHandler _userInput;
         private CharacterController _characterController;
         private Camera _camera;
+        private Vector3 _lookTarget;
 
         private float _turnVelocity;
-        private Rigidbody _rigidbody;
 
         private void Awake() {
             _camera = Camera.main;
             _characterController = GetComponent<CharacterController>();
             _userInput = GetComponent<UserInputHandler>();
-            _rigidbody = GetComponent<Rigidbody>();
 
             _userInput.OnMoveEvent += OnInputMove;
             _userInput.OnRotateEvent += OnInputRotate;
@@ -57,17 +56,13 @@ namespace MegameAnimatoins {
         }
 
         private void LateUpdate() {
-            var lookTarget = _lookTarget;
-            lookTarget.y = spineNode.position.y;
+            var spineNodePosition = spineNode.position;
 
-            // Debug.DrawRay(
-            //     spineNode.position,
-            //     lookTarget - spineNode.position,
-            //     Color.red
-            // );
+            var lookTarget = _lookTarget;
+            lookTarget.y = spineNodePosition.y;
 
             var signedAngle = Vector3.SignedAngle(
-                lookTarget - spineNode.position,
+                lookTarget - spineNodePosition,
                 transform.forward,
                 Vector3.up
             );
@@ -80,10 +75,7 @@ namespace MegameAnimatoins {
             _userInput.OnRotateEvent -= OnInputRotate;
         }
 
-        private Vector3 _lookTarget;
-
         private void OnInputRotate(Vector3 mouseposition) {
-            // var cameraPosition = _camera.transform.position;
             var maxDistanceRay = 100f;
             var screenPointRay = _camera.ScreenPointToRay(
                 new Vector3(
@@ -96,13 +88,6 @@ namespace MegameAnimatoins {
             if (!Physics.Raycast(screenPointRay, out var pointRaycastHit, maxDistanceRay, groundLayers)) {
                 return;
             }
-
-            // var targetPosition = pointRaycastHit.point - cameraPosition;
-            // Debug.DrawRay(
-            //     cameraPosition,
-            //     targetPosition,
-            //     Color.yellow
-            // );
 
             _lookTarget = pointRaycastHit.point;
         }
