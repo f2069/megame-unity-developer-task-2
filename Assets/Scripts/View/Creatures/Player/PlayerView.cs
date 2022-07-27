@@ -125,7 +125,7 @@ namespace MegameAnimatoins.View.Creatures.Player {
             _chestMovement.SetSpinePosition(spineNode.position);
 
             spineNode.localEulerAngles += _chestMovement.GetEulerAngles(
-                transform.forward,
+                _rigidbody.transform.forward,
                 _enemyTarget ? enemyPosition : _mousePointPosition,
                 _enemyTarget == null
             );
