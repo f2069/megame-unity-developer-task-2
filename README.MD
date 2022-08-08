@@ -1,6 +1,9 @@
 # Тестовое Задание №2 - Интеграция анимаций
 
-[Оригинальный текст](https://docs.google.com/document/d/1KVQ-o5OLX-Z-P6QhcF-w_8YA9C0z4j9MV_-C3bAwKhQ/edit?usp=sharing).
+- [Оригинальный текст](https://docs.google.com/document/d/1KVQ-o5OLX-Z-P6QhcF-w_8YA9C0z4j9MV_-C3bAwKhQ/edit?usp=sharing)
+- Видео геймплея: [https://youtu.be/YntvFRvhlsU](https://youtu.be/YntvFRvhlsU)
+
+---
 
 Скачайте проект https://github.com/Megame-Studio/unity-developer-task (вы можете редактировать проект как считаете нужным).
 
